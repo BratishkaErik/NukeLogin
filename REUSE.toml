@@ -1,0 +1,12 @@
+version = 1
+
+# Gradle wrapper stuff. I want to leave sources intact, to not break
+# building process.
+[[annotations]]
+path = [
+	"gradle/wrapper/*",
+	"gradlew",
+	"gradlew.bat"
+]
+SPDX-FileCopyrightText = "2015 Original Gradle authors"
+SPDX-License-Identifier = "Apache-2.0"

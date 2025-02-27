@@ -1,0 +1,29 @@
+-- SPDX-FileCopyrightText: 2025 Eric Joldasov
+--
+-- SPDX-License-Identifier: 0BSD
+
+CREATE TABLE IF NOT EXISTS players
+(
+    uuid     TEXT NOT NULL PRIMARY KEY,
+    name     TEXT NOT NULL,
+    password BLOB NOT NULL
+);
+
+playerExist:
+SELECT EXISTS(
+    SELECT 1 FROM players WHERE uuid = :uuid
+);
+
+-- Asserts that player is not registered yet
+registerPlayer:
+INSERT OR ABORT INTO players (uuid, name, password)
+VALUES (:uuid, :name, :password);
+
+
+-- Asserts that player is already registered
+unregisterPlayer:
+DELETE FROM players WHERE uuid = :uuid;
+
+-- Asserts that player is already registered
+getPlayerPassword:
+SELECT password FROM players WHERE uuid = :uuid;

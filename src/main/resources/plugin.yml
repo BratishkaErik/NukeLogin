@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2025 Eric Joldasov
+#
+# SPDX-License-Identifier: 0BSD
+
+name: NukeLogin
+version: '0.1.0'
+main: net.landlesscity.nukelogin.Main
+api-version: '1.13'
+prefix: NUKEL
+load: STARTUP
+authors: [BratishkaErik]
+description: Plugin for logining
+website: www.landless-city.net/nukelogin/
+commands:
+  register:
+    description: Register yourself
+    usage: /register <password>
+  login:
+    description: Authenthificate yourself
+    usage: /login <password>

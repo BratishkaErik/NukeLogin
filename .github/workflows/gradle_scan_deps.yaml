@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2025 Eric Joldasov
+# SPDX-License-Identifier: CC0-1.0
+
+name: Gradle
+permissions:
+  contents: write
+on:
+  merge_group:
+  push:
+    branches: "**"
+    paths-ignore:
+      - "LICENSE/**"
+      - "README.md"
+      - "REUSE.toml"
+      - ".gitignore"
+  # Not available for pull_request
+jobs:
+  build:
+    name: Scan dependencies
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout last commit
+        uses: actions/checkout@e3d2460bbb42d7710191569f88069044cfb9d8cf
+        with:
+          persist-credentials: false
+      - name: Setup Java 21
+        uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12
+        with:
+          distribution: "temurin"
+          java-version: "21"
+      - name: Setup Gradle 8.12
+        uses: gradle/actions/setup-gradle@0eda626a36b219e8e4eb4073a97da49474c02687
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@0eda626a36b219e8e4eb4073a97da49474c02687
+        with:
+          gradle-version: "8.12"
+          dependency-graph: "generate-and-submit"
