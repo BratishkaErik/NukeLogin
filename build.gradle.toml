@@ -4,6 +4,7 @@
 
 [versions]
 kotlin = "2.1.20-RC"
+dokka = "2.0.0"
 shadow = "8.3.6"
 
 spigot = "1.12.2-R0.1-SNAPSHOT"
@@ -20,5 +21,6 @@ sqldelight-sqlite-dialect = { group = "app.cash.sqldelight", name = "sqlite-3-18
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

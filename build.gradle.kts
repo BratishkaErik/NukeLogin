@@ -2,10 +2,12 @@
 //
 // SPDX-License-Identifier: 0BSD
 
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.dokka)
     alias(libs.plugins.shadow)
     alias(libs.plugins.sqldelight)
 }
@@ -85,5 +87,16 @@ sqldelight {
             srcDirs = files("src/main/sqldelight/userlogin/sqlite/")
             dialect(libs.sqldelight.sqlite.dialect)
         }
+    }
+}
+
+dokka {
+    dokkaSourceSets.main {
+        documentedVisibilities = setOf(
+            VisibilityModifier.Public,
+            VisibilityModifier.Internal,
+            VisibilityModifier.Protected,
+            VisibilityModifier.Private,
+        )
     }
 }
