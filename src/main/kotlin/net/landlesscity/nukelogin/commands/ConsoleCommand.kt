@@ -6,11 +6,11 @@ package net.landlesscity.nukelogin.commands
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.command.TabExecutor
-import org.bukkit.entity.Player
 
-internal sealed interface PlayerCommand : TabExecutor {
-    fun run(player: Player, args: Array<out String>): Boolean
+internal sealed interface ConsoleCommand : TabExecutor {
+    fun run(console: ConsoleCommandSender, args: Array<out String>): Boolean
     fun complete(args: Array<out String>): List<String>?
 
     override fun onCommand(
@@ -19,8 +19,8 @@ internal sealed interface PlayerCommand : TabExecutor {
         label: String,
         args: Array<out String>,
     ): Boolean {
-        if (sender !is Player) {
-            sender.sendMessage("Only player can run this command!")
+        if (sender !is ConsoleCommandSender) {
+            sender.sendMessage("Only console can run this command!")
             return true
         }
 

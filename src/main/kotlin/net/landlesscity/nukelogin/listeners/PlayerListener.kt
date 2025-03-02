@@ -28,10 +28,11 @@ internal object PlayerListener : Listener {
         when (playersQueue[uuid]) {
             Status.WAITING_REGISTRATION ->
                 player.sendMessage("You have not finished registration yet! Register with /register <password>!")
+
             Status.WAITING_LOG_IN -> player.sendMessage("Authentificate with /login <password>!")
-            Status.AUTHENTIFICATED -> player.sendMessage("You joined!")
+            Status.AUTHENTICATED -> player.sendMessage("You joined!")
             null -> {
-                val playerExist = sql.playerExist(uuid.toString()).executeAsOne()
+                val playerExist = sql.checkPlayer(uuid.toString()).executeAsOne()
                 when (playerExist) {
                     true -> {
                         player.sendMessage("Authentificate with /login <password>!")
@@ -62,7 +63,7 @@ internal object PlayerListener : Listener {
             Status.WAITING_LOG_IN,
                 -> event.isCancelled = true
 
-            Status.AUTHENTIFICATED -> {}
+            Status.AUTHENTICATED -> {}
         }
     }
 
@@ -73,7 +74,7 @@ internal object PlayerListener : Listener {
 
         when (playersQueue[uuid]!!) {
             Status.WAITING_REGISTRATION, Status.WAITING_LOG_IN -> event.isCancelled = true
-            Status.AUTHENTIFICATED -> {}
+            Status.AUTHENTICATED -> {}
         }
     }
 
@@ -81,7 +82,7 @@ internal object PlayerListener : Listener {
     fun onLeave(event: PlayerQuitEvent) {
         val uuid = event.player.todoUuid()
 
-        assert(playersQueue.containsKey(uuid))
+        require(playersQueue.containsKey(uuid))
         playersQueue.remove(uuid)
     }
 }

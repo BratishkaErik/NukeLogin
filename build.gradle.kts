@@ -5,10 +5,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.1.20-RC"
-    id("app.cash.sqldelight") version "2.0.2"
-    id("com.gradleup.shadow") version "8.3.6"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.sqldelight)
 }
 
 group = "net.landlesscity"
@@ -28,26 +27,11 @@ repositories {
 
 dependencies {
     // Basic kit for making Spigot plugin in Kotlin:
-    compileOnly(
-        group = "org.spigotmc",
-        name = "spigot-api",
-        version = "1.12.2-R0.1-SNAPSHOT",
-    )
-    implementation(
-        group = "org.jetbrains.kotlin",
-        name = "kotlin-stdlib-jdk8",
-    )
+    compileOnly(libs.spigot.api)
+    implementation(libs.kotlin.stdlib)
 
-    implementation(
-        group = "app.cash.sqldelight",
-        name = "sqlite-driver",
-        version = "2.0.2",
-    )
-    implementation(
-        group = "com.password4j",
-        name = "password4j",
-        version = "1.8.2",
-    )
+    implementation(libs.password4j)
+    implementation(libs.sqldelight.sqlite)
 }
 
 kotlin {
@@ -64,16 +48,6 @@ java {
 tasks {
     build {
         dependsOn(shadowJar)
-    }
-
-    check {
-        this.dependsOn.removeAll({
-            it is TaskProvider<*> && it.name == "detekt"
-        })
-    }
-
-    detekt {
-        basePath = rootProject.projectDir.absolutePath
     }
 
     processResources {
@@ -101,10 +75,15 @@ tasks {
 
 sqldelight {
     databases {
-        create("SQLite") {
-            packageName = "net.landlesscity.nukelogin.sql"
-            // SpigotMC 1.12.2 includes SQLite version 3.21
-            dialect("app.cash.sqldelight:sqlite-3-18-dialect:2.0.2")
+        create("SQLiteDatabase") {
+            packageName = "main.sqlite"
+            srcDirs = files("src/main/sqldelight/main/sqlite/")
+            dialect(libs.sqldelight.sqlite.dialect)
+        }
+        create("UserLoginSQLiteDatabase") {
+            packageName = "userlogin.sqlite"
+            srcDirs = files("src/main/sqldelight/userlogin/sqlite/")
+            dialect(libs.sqldelight.sqlite.dialect)
         }
     }
 }

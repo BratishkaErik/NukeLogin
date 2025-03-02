@@ -1,0 +1,75 @@
+-- SPDX-FileCopyrightText: 2025 Eric Joldasov
+--
+-- SPDX-License-Identifier: 0BSD
+CREATE TABLE IF NOT EXISTS players
+(
+    uuid TEXT NOT NULL PRIMARY KEY CHECK (length(uuid) == 36),
+    -- NULL if we haven't seen it yet
+    name TEXT CHECK (name IS NULL OR length(name) > 0)
+);
+
+CREATE TABLE IF NOT EXISTS passwords_current
+(
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    player_uuid TEXT    NOT NULL REFERENCES players(uuid) UNIQUE,
+    algorithm   TEXT    NOT NULL CHECK (length(algorithm) > 0),
+    -- Must contain configuration and salt inside
+    hash        BLOB AS VALUE NOT NULL CHECK (length(hash) > 0)
+);
+
+CREATE TABLE IF NOT EXISTS passwords_history
+(
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    player_uuid TEXT    NOT NULL REFERENCES players(uuid),
+    changed_at  INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
+-- Asserts that player is not registered yet
+registerPlayer {
+    INSERT OR REPLACE INTO players (uuid, name)
+    VALUES (:uuid, :name);
+
+    INSERT OR ABORT INTO passwords_history(player_uuid)
+    VALUES (:uuid);
+
+    INSERT OR ABORT INTO passwords_current(player_uuid, algorithm, hash)
+    VALUES (:uuid, :algorithm, :hash);
+}
+
+-- Assumes that player is already registered
+unregisterPlayer {
+    DELETE FROM passwords_current
+    WHERE player_uuid = :uuid;
+
+    DELETE FROM passwords_history
+    WHERE player_uuid = :uuid;
+
+    DELETE FROM players
+    WHERE uuid = :uuid;
+}
+
+-- No assumptions
+checkPlayer:
+SELECT EXISTS(SELECT 1
+              FROM players p
+              WHERE p.uuid = :uuid);
+
+-- Assumes that player is already registered
+getPasswordCurrent:
+SELECT pass.algorithm, pass.hash
+FROM passwords_current pass
+WHERE pass.player_uuid = :uuid;
+
+-- Assumes that player is already registered
+-- Update from old algorithm to new, leaving no trace in history
+updatePasswordAlgorithm:
+UPDATE passwords_current SET
+algorithm = :algorithm,
+hash = :hash
+WHERE player_uuid = :uuid;
+
+getName:
+SELECT p.name FROM players p WHERE p.uuid = :uuid;
+
+setName:
+UPDATE players SET name = :name WHERE uuid = :uuid;

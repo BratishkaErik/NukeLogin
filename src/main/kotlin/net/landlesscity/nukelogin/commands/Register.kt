@@ -4,12 +4,11 @@
 
 package net.landlesscity.nukelogin.commands
 
-import com.password4j.Password
+import net.landlesscity.nukelogin.Algorithm
 import net.landlesscity.nukelogin.Main.Companion.database
 import net.landlesscity.nukelogin.Status
 import net.landlesscity.nukelogin.playersQueue
 import net.landlesscity.nukelogin.todoUuid
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 private val sql = database.playerQueries
@@ -25,26 +24,22 @@ private fun exec(
     val uuid = player.todoUuid()
     when (playersQueue.getValue(uuid)) {
         Status.WAITING_REGISTRATION -> {
-            val hash = run {
-                val plainText = args[0].toByteArray()
-                val hashBuilder = Password.hash(plainText)
-                @Suppress("MagicNumber")
-                hashBuilder.addRandomSalt(24)
-                return@run hashBuilder.withArgon2().resultAsBytes
-            }
+            val plainText = args[0].toByteArray()
+            val hash = Algorithm.Default.hash(plainText)
 
             sql.registerPlayer(
                 uuid = uuid.toString(),
                 name = player.name,
-                password = hash,
+                algorithm = Algorithm.Default.name,
+                hash = hash,
             )
 
             player.sendMessage("Successfully registered!")
-            playersQueue[uuid] = Status.AUTHENTIFICATED
+            playersQueue[uuid] = Status.AUTHENTICATED
         }
 
         Status.WAITING_LOG_IN -> player.sendMessage("You already registered! Authentificate using /login <password>!")
-        Status.AUTHENTIFICATED -> player.sendMessage("You already registered and authentificated!")
+        Status.AUTHENTICATED -> player.sendMessage("You already registered and authentificated!")
     }
     return true
 }
@@ -57,6 +52,6 @@ internal object Register : PlayerCommand {
     ): Boolean = exec(player, args)
 
     override fun complete(
-        sender: CommandSender, args: Array<out String>
+        args: Array<out String>
     ): List<String>? = tab
 }

@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2025 Eric Joldasov
+#
+# SPDX-License-Identifier: 0BSD
+
+[versions]
+kotlin = "2.1.20-RC"
+shadow = "8.3.6"
+
+spigot = "1.12.2-R0.1-SNAPSHOT"
+password4j = "1.8.2"
+sqldelight = "2.0.2"
+
+[libraries]
+spigot-api = { group = "org.spigotmc", name = "spigot-api", version.ref = "spigot" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+password4j = { group = "com.password4j", name = "password4j", version.ref = "password4j" }
+sqldelight-sqlite = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
+# SpigotMC 1.12.2 includes SQLite version 3.21
+sqldelight-sqlite-dialect = { group = "app.cash.sqldelight", name = "sqlite-3-18-dialect", version.ref = "sqldelight" }
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

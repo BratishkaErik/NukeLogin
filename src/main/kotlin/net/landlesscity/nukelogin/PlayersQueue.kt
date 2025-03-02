@@ -12,7 +12,7 @@ internal val playersQueue: LinkedHashMap<UUID, Status> = LinkedHashMap()
 internal enum class Status {
     WAITING_REGISTRATION,
     WAITING_LOG_IN,
-    AUTHENTIFICATED,
+    AUTHENTICATED,
 }
 
 

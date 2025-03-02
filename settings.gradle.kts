@@ -3,3 +3,11 @@
 // SPDX-License-Identifier: 0BSD
 
 rootProject.name = "NukeLogin"
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("build.gradle.toml"))
+        }
+    }
+}

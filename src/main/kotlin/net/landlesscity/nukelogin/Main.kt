@@ -5,30 +5,38 @@
 package net.landlesscity.nukelogin
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import main.sqlite.SQLiteDatabase
 import net.landlesscity.nukelogin.commands.Login
+import net.landlesscity.nukelogin.commands.Migrate
 import net.landlesscity.nukelogin.commands.Register
 import net.landlesscity.nukelogin.listeners.PlayerListener
-import net.landlesscity.nukelogin.sql.SQLite
+import org.bukkit.Server
 import org.bukkit.plugin.java.JavaPlugin
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.*
 
 class Main : JavaPlugin() {
     override fun onEnable() {
-        if (!dataFolder.exists()) dataFolder.mkdir()
+        Companion.cwd = dataFolder.toPath()
+        Companion.server = server
+        if (!Files.exists(cwd)) {
+            Files.createDirectories(cwd)
+        }
 
-        val databasePath = dataFolder.resolve("main.db")
+        val databasePath = dataFolder.resolve("nukelogin_sqlite3.db")
         logger.info("Loading database ${databasePath}...")
         val driver = JdbcSqliteDriver(
-            "jdbc:sqlite:${databasePath}",
+            "jdbc:sqlite:file:${databasePath}",
             Properties().apply {
-                "encoding" to "UTF-8"
-                "journal_mode" to "WAL"
-                "foreign_keys" to true
-                "trusted_schema" to false
+                setProperty("encoding", "\"UTF-8\"")
+                setProperty("journal_mode", "WAL")
+                setProperty("foreign_keys", "true")
+                setProperty("trusted_schema", "false")
             },
-            SQLite.Schema,
+            SQLiteDatabase.Schema,
         )
-        database = SQLite(driver)
+        Companion.database = SQLiteDatabase(driver)
 
         logger.info("Enabling event listeners and commands...")
         this.server.pluginManager.registerEvents(PlayerListener, this)
@@ -40,9 +48,15 @@ class Main : JavaPlugin() {
             this.executor = Login
             this.tabCompleter = Login
         }
+        this.getCommand("migrate")!!.apply {
+            this.executor = Migrate
+            this.tabCompleter = Migrate
+        }
     }
 
     internal companion object {
-        internal lateinit var database: SQLite
+        internal lateinit var cwd: Path
+        internal lateinit var server: Server
+        internal lateinit var database: SQLiteDatabase
     }
 }

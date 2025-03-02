@@ -1,0 +1,12 @@
+-- SPDX-FileCopyrightText: 2022 ElCholoGamer
+--
+-- SPDX-License-Identifier: MIT
+
+-- https://github.com/Grazen0/UserLogin/blob/a4251aa8aa5bf3a21b777dc0e35f2bf14616249b/src/main/java/com/elchologamer/userlogin/database/sql/SQLDatabase.java#L38-L43
+CREATE TABLE IF NOT EXISTS player_data (
+    uuid TEXT NOT NULL PRIMARY KEY,
+    password TEXT NOT NULL
+);
+
+getAll:
+SELECT p.uuid, p.password FROM player_data p;
