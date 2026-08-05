@@ -4,10 +4,6 @@
 
 rootProject.name = "NukeLogin"
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("build.gradle.toml"))
-        }
-    }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention").version("1.0.0")
 }

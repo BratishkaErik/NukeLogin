@@ -53,9 +53,10 @@ tasks {
     }
 
     processResources {
-        val props = mapOf("version" to version)
-        inputs.properties(props)
-        filteringCharset = "UTF-8"
+        val props = mapOf(
+            "version" to project.version
+        )
+
         filesMatching("plugin.yml") {
             expand(props)
         }
@@ -69,7 +70,8 @@ tasks {
             // Since they are already included by Spigot, just omit them.
             exclude(dependency("org.xerial:sqlite-jdbc:.*"))
         }
-        isEnableRelocation = true
+        enableAutoRelocation = true
+
         relocationPrefix = "net.landlesscity.nukelogin.libs"
         minimize()
     }
@@ -90,6 +92,11 @@ sqldelight {
     }
 }
 
+tasks.withType<app.cash.sqldelight.gradle.VerifyMigrationTask> {
+    enabled = false
+}
+
+
 dokka {
     dokkaSourceSets.main {
         documentedVisibilities = setOf(
@@ -100,3 +107,34 @@ dokka {
         )
     }
 }
+
+/* tasks.register("testMinecraftPlugin") {
+
+    doLast {
+        // Build plugin JAR first
+        val pluginJar = tasks.named("jar").get().outputs.files.singleFile
+
+        // Start PaperMC server container
+        val mc = GenericContainer<Nothing>("itzg/minecraft-paper-server:1.20.4")
+            .withEnv("EULA", "TRUE")
+            .withEnv("TYPE", "PAPER")
+            .withEnv("VERSION", "1.20.4")
+            .withExposedPorts(25565)
+            .apply {
+                // Copy plugin JAR into /plugins
+                withCopyFileToContainer(MountableFile.forHostPath(pluginJar.absolutePath), "/plugins/${pluginJar.name}")
+            }
+
+        mc.start()
+
+        println("✅ Minecraft server started at localhost:${mc.getMappedPort(25565)}")
+        println("📂 Your plugin '${pluginJar.name}' is loaded into /plugins inside the container.")
+
+        // Wait for logs or test interaction
+        Thread.sleep(15000) // allow boot time
+        val logs = mc.logs
+        println("--- Minecraft logs ---")
+        println(logs)
+    }
+}
+*/

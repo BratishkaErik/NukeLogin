@@ -3,14 +3,16 @@
 # SPDX-License-Identifier: 0BSD
 
 name: NukeLogin
-version: '0.1.0'
+version: '${version}'
+description: Plugin for logining
+author: BratishkaErik
+website: https://www.landless-city.net/nukelogin/
+
 main: net.landlesscity.nukelogin.Main
+load: STARTUP
 api-version: '1.13'
 prefix: NUKEL
-load: STARTUP
-authors: [BratishkaErik]
-description: Plugin for logining
-website: www.landless-city.net/nukelogin/
+
 commands:
   register:
     description: Register yourself
